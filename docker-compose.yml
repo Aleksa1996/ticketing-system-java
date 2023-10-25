@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+# ---------------------------------------------------------------------------- #
+#                                 Java                                         #
+# ---------------------------------------------------------------------------- #
+    java:
+        container_name: 'java'
+        image: 'eclipse-temurin:17-jdk-jammy'
+        volumes:
+            - './:/var/www/html'
+        command: 'tail -f /dev/null'
+        ports:
+            - '80:80'
+        restart: unless-stopped
+# ---------------------------------------------------------------------------- #
+#                                 Frontend                                     #
+# ---------------------------------------------------------------------------- #
+    # frontend:
+    #     container_name: 'frontend'
+    #     image: 'dev-build/frontend'
+    #     build:
+    #         context: './frontend'
+    #         dockerfile: Dockerfile.dev
+    #     volumes:
+    #         - './frontend:/var/www/html'
+    #     restart: unless-stopped
