@@ -1,7 +1,8 @@
 package com.aleksa1996.ticketingsystem.domain;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public interface UserRepository {
 
-public interface UserRepository extends JpaRepository<User, String> {
+    public long count();
 
+    public User save(User user);
 }

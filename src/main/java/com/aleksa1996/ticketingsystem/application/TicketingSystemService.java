@@ -14,7 +14,7 @@ public class TicketingSystemService {
     @Autowired
     private UserRepository userRepository;
 
-    public void startNewConversation(String name, String email, String subject, String message) {
+    public void openNewConversation(String name, String email, String subject, String message) {
 
         System.out.print(userRepository.count());
 
@@ -24,7 +24,7 @@ public class TicketingSystemService {
         // find user by email
         // if exists fetch it
         // if does not exists, create new
-        // start new conversation
+        // open new conversation
         // add first message
         // Conversation newConversation = new Conversation(null, null, null);
     }
