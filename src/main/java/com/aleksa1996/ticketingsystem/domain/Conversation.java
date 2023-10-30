@@ -2,6 +2,7 @@ package com.aleksa1996.ticketingsystem.domain;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class Conversation extends Entity {
 
@@ -11,17 +12,18 @@ public class Conversation extends Entity {
 
     private Agent assignedAgent;
 
-    private ConversationStatus status;
+    private Set<ConversationStatus> statuses;
 
     private Set<Message> messages;
 
-    public Conversation(Id id, String subject, Customer customer) {
+    public Conversation(UUID id, String subject, Customer customer) {
 
         super(id);
 
         setSubject(subject);
         setCustomer(customer);
         setMessages(new HashSet<Message>(0));
+        setStatuses(new HashSet<ConversationStatus>(0));
     }
 
     public String getSubject() {
@@ -48,12 +50,12 @@ public class Conversation extends Entity {
         this.assignedAgent = assignedAgent;
     }
 
-    public ConversationStatus getStatus() {
-        return status;
+    public Set<ConversationStatus> getStatuses() {
+        return statuses;
     }
 
-    private void setStatus(ConversationStatus status) {
-        this.status = status;
+    private void setStatuses(Set<ConversationStatus> statuses) {
+        this.statuses = statuses;
     }
 
     public Set<Message> getMessages() {
@@ -64,7 +66,7 @@ public class Conversation extends Entity {
         this.messages = messages;
     }
 
-    public void writeMessage(Id id, User user, String content) {
-        messages.add(new Message(id, user, content));
+    public void writeMessage(String user, String content) {
+        messages.add(new Message(user, content));
     }
 }

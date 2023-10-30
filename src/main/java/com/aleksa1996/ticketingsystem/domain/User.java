@@ -1,12 +1,18 @@
 package com.aleksa1996.ticketingsystem.domain;
 
+import java.util.UUID;
+
 public abstract class User extends Entity {
 
     protected String name;
 
     protected String email;
 
-    public User(Id id, String name, String email) {
+    public User() {
+        super();
+    }
+
+    public User(UUID id, String name, String email) {
         super(id);
 
         setName(name);

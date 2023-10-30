@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-mapping SYSTEM
+    "http://www.hibernate.org/dtd/hibernate-mapping">
+
+<hibernate-mapping>
+    <subclass name="com.aleksa1996.ticketingsystem.domain.Agent" extends="com.aleksa1996.ticketingsystem.domain.User" discriminator-value="A"/>
+</hibernate-mapping>

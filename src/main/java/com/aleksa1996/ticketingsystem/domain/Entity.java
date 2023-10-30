@@ -1,18 +1,23 @@
 package com.aleksa1996.ticketingsystem.domain;
 
+import java.util.UUID;
+
 public abstract class Entity {
 
-    protected Id id;
+    protected UUID id;
 
-    public Entity(Id id) {
+    public Entity() {
+    }
+
+    public Entity(UUID id) {
         setId(id);
     }
 
-    public Id getId() {
+    public UUID getId() {
         return id;
     }
 
-    protected void setId(Id id) {
+    protected void setId(UUID id) {
         this.id = id;
     }
 }

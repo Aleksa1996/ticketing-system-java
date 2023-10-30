@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-mapping SYSTEM
+    "http://www.hibernate.org/dtd/hibernate-mapping">
+
+<hibernate-mapping>
+    <class name="com.aleksa1996.ticketingsystem.domain.User" extends="com.aleksa1996.ticketingsystem.domain.Entity" discriminator-value="U" table="tss_users">
+
+        <discriminator column="type" type="char"/>
+
+        <id name="id" type="uuid" column="id"/>
+
+        <property name="name" column="name" type="string"/>
+        <property name="email" column="email" type="string"/>
+    </class>
+</hibernate-mapping>

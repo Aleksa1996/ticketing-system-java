@@ -10,8 +10,8 @@ services:
         volumes:
             - './:/var/www/html'
         command: 'tail -f /dev/null'
-        ports:
-            - '80:80'
+#        ports:
+#            - '80:80'
         restart: unless-stopped
 # ---------------------------------------------------------------------------- #
 #                                 Frontend                                     #

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-mapping SYSTEM
+    "http://www.hibernate.org/dtd/hibernate-mapping">
+
+<hibernate-mapping>
+    <class name="com.aleksa1996.ticketingsystem.domain.Message" table="tss_conversation_messages">
+
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+
+        <property name="user" column="user" type="string"/>
+        <property name="content" column="content" type="string"/>
+    </class>
+</hibernate-mapping>
