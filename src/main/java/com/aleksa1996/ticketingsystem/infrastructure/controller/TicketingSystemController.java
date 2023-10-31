@@ -16,7 +16,8 @@ public class TicketingSystemController {
     @GetMapping("/create-agent")
     public void createAgent() {
 
-        ticketingSystemService.openNewConversation("", "", "", "");
+        ticketingSystemService.createAgent("Aleksa", "aleksa.j.1996@gmail.com");
+        ticketingSystemService.openNewConversation("Aleksa", "aleksa.j.1996@gmail.com", "Pera", "Peric");
     }
 
     @GetMapping("/register-customer")

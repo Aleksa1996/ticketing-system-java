@@ -69,4 +69,20 @@ public class Conversation extends Entity {
     public void writeMessage(String user, String content) {
         messages.add(new Message(user, content));
     }
+
+    public static Conversation open(String subject, Customer customer, String message) {
+        Conversation conversation = new Conversation(UUID.randomUUID(), subject, customer);
+
+        conversation.statuses
+                .add(new ConversationStatus(ConversationStatusState.OPENED, "Conversation has been opened"));
+        conversation.writeMessage(customer.getName(), message);
+
+        return conversation;
+    }
+
+    public void close() {
+
+        statuses
+                .add(new ConversationStatus(ConversationStatusState.CLOSED, "Conversation has been closed"));
+    }
 }

@@ -1,8 +1,7 @@
 package com.aleksa1996.ticketingsystem.domain;
 
-public interface UserRepository {
+import java.util.Optional;
 
-    public long count();
-
-    public User save(User user);
+public interface UserRepository<T> extends Repository<T> {
+    public Optional<T> findByEmail(String email);
 }
