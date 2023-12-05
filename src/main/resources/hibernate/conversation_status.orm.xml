@@ -3,7 +3,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping">
 
 <hibernate-mapping>
-    <class name="com.aleksa1996.ticketingsystem.domain.ConversationStatus" table="tss_conversation_statuses">
+    <class name="com.aleksa1996.ticketingsystem.domain.ConversationStatus" table="TSS_CONVERSATION_STATUSES">
 
         <id name="id" type="int" column="id">
             <generator class="native"/>

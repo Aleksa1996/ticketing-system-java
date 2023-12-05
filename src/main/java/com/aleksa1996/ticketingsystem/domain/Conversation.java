@@ -16,6 +16,10 @@ public class Conversation extends Entity {
 
     private Set<Message> messages;
 
+    public Conversation() {
+        super();
+    }
+
     public Conversation(UUID id, String subject, Customer customer) {
 
         super(id);

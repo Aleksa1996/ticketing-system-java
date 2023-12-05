@@ -29,3 +29,6 @@ spring:
       - hibernate/message.orm.xml
       - hibernate/conversation_status.orm.xml
       - hibernate/conversation.orm.xml
+  security:
+    user:
+      password: "user123"

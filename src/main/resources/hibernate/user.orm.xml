@@ -3,7 +3,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping">
 
 <hibernate-mapping>
-    <class name="com.aleksa1996.ticketingsystem.domain.User" extends="com.aleksa1996.ticketingsystem.domain.Entity" discriminator-value="U" table="tss_users">
+    <class name="com.aleksa1996.ticketingsystem.domain.User" extends="com.aleksa1996.ticketingsystem.domain.Entity" discriminator-value="U" table="TSS_USERS">
 
         <discriminator column="type" type="char"/>
 

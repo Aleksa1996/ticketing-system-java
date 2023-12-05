@@ -8,6 +8,10 @@ public class Message {
 
     private String content;
 
+    public Message() {
+        super();
+    }
+
     public Message(String user, String content) {
 
         setUser(user);

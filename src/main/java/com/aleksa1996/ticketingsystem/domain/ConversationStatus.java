@@ -8,6 +8,9 @@ public class ConversationStatus {
 
     private String description;
 
+    public ConversationStatus() {
+    }
+
     public ConversationStatus(ConversationStatusState state, String description) {
         setState(state);
         setDescription(description);

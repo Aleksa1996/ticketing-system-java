@@ -3,7 +3,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping">
 
 <hibernate-mapping>
-    <class name="com.aleksa1996.ticketingsystem.domain.Conversation" extends="com.aleksa1996.ticketingsystem.domain.Entity" table="tss_conversations">
+    <class name="com.aleksa1996.ticketingsystem.domain.Conversation" extends="com.aleksa1996.ticketingsystem.domain.Entity" table="TSS_CONVERSATIONS">
 
         <id name="id" type="uuid" column="id"/>
 
