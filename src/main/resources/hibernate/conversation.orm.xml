@@ -6,8 +6,7 @@
     <class name="com.aleksa1996.ticketingsystem.domain.Conversation" extends="com.aleksa1996.ticketingsystem.domain.Entity" table="TSS_CONVERSATIONS">
 
         <id name="id" type="uuid" column="id"/>
-
-        <property name="subject" column="name" type="string"/>
+        <property name="subject" column="name" type="string" length="100"/>
 
         <many-to-one name="customer" class="com.aleksa1996.ticketingsystem.domain.Customer" column="customer_id"/>
         <many-to-one name="assignedAgent" class="com.aleksa1996.ticketingsystem.domain.Agent" column="assigned_agent_id"/>
@@ -17,7 +16,7 @@
             <one-to-many class="com.aleksa1996.ticketingsystem.domain.ConversationStatus"/>
         </set>
 
-        <set name="messages" sort="natural" cascade="all">
+        <set name="messages" cascade="all" order-by="wrote_on desc">
             <key column="conversation_id"/>
             <one-to-many class="com.aleksa1996.ticketingsystem.domain.Message"/>
         </set>

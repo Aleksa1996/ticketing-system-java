@@ -4,6 +4,7 @@ import com.aleksa1996.ticketingsystem.domain.Customer;
 import com.aleksa1996.ticketingsystem.domain.UserRepository;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +18,29 @@ public class JpaCustomerRepository implements UserRepository<Customer> {
     @Lazy
     JpaCustomerRepositoryInterface repository;
 
+    @Override
     public long count() {
         return repository.count();
     }
 
+    @Override
     public Customer save(Customer object) {
         return repository.save(object);
     }
 
+    @Override
     public Optional<Customer> findById(UUID id) {
         return repository.findById(id);
     }
 
+    @Override
     public Optional<Customer> findByEmail(String email) {
         return repository.findByEmail(email);
+    }
+
+    @Override
+    public Set<Customer> query(int size, int page) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'query'");
     }
 }

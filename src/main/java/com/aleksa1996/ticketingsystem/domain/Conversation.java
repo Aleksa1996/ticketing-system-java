@@ -1,6 +1,7 @@
 package com.aleksa1996.ticketingsystem.domain;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class Conversation extends Entity {
 
         setSubject(subject);
         setCustomer(customer);
-        setMessages(new HashSet<Message>(0));
+        setMessages(new LinkedHashSet<Message>(0));
         setStatuses(new HashSet<ConversationStatus>(0));
     }
 
@@ -54,6 +55,10 @@ public class Conversation extends Entity {
         this.assignedAgent = assignedAgent;
     }
 
+    public void assignAgent(Agent agent) {
+        setAssignedAgent(agent);
+    }
+
     public Set<ConversationStatus> getStatuses() {
         return statuses;
     }
@@ -70,7 +75,21 @@ public class Conversation extends Entity {
         this.messages = messages;
     }
 
-    public void writeMessage(String user, String content) {
+    public void writeMessage(UUID userId, String content) {
+        String user = null;
+
+        if (customer.getId().equals(userId)) {
+            user = customer.getName();
+        }
+
+        if (assignedAgent != null && assignedAgent.getId().equals(userId)) {
+            user = assignedAgent.getName();
+        }
+
+        if (user == null) {
+            throw new UserDoesNotBelongToConversation();
+        }
+
         messages.add(new Message(user, content));
     }
 
@@ -79,13 +98,13 @@ public class Conversation extends Entity {
 
         conversation.statuses
                 .add(new ConversationStatus(ConversationStatusState.OPENED, "Conversation has been opened"));
-        conversation.writeMessage(customer.getName(), message);
+        conversation.writeMessage(customer.getId(), message);
 
         return conversation;
     }
 
     public void close() {
-
+        
         statuses
                 .add(new ConversationStatus(ConversationStatusState.CLOSED, "Conversation has been closed"));
     }

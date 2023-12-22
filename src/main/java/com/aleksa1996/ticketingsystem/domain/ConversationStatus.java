@@ -1,6 +1,6 @@
 package com.aleksa1996.ticketingsystem.domain;
 
-public class ConversationStatus {
+public class ConversationStatus implements Comparable<ConversationStatus> {
 
     private int id;
 
@@ -38,5 +38,10 @@ public class ConversationStatus {
 
     private void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public int compareTo(ConversationStatus status) {
+        return Integer.compare(id, status.getId());
     }
 }

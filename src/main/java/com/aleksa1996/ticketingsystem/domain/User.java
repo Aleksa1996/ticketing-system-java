@@ -2,7 +2,7 @@ package com.aleksa1996.ticketingsystem.domain;
 
 import java.util.UUID;
 
-public abstract class User extends Entity {
+public class User extends Entity {
 
     protected String name;
 

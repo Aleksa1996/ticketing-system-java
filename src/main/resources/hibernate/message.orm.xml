@@ -9,7 +9,8 @@
             <generator class="native"/>
         </id>
 
-        <property name="user" column="userr" type="string"/>
-        <property name="content" column="content" type="string"/>
+        <property name="user" column="userr" type="string" length="255"/>
+        <property name="content" column="content" type="string" length="500"/>
+        <property name="wroteOn" column="wrote_on" type="timestamp"/>
     </class>
 </hibernate-mapping>

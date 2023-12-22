@@ -1,12 +1,16 @@
 package com.aleksa1996.ticketingsystem.domain;
 
-public class Message {
+import java.util.Date;
+
+public class Message implements Comparable<Message> {
 
     private int id;
 
     private String user;
 
     private String content;
+
+    private Date wroteOn;
 
     public Message() {
         super();
@@ -16,6 +20,7 @@ public class Message {
 
         setUser(user);
         setContent(content);
+        setWroteOn(new Date());
     }
 
     public int getId() {
@@ -42,27 +47,16 @@ public class Message {
         this.content = content;
     }
 
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (!this.getClass().equals(obj.getClass()))
-            return false;
-
-        Message obj2 = (Message) obj;
-        if ((this.id == obj2.getId()) && (this.user.equals(obj2.getUser()))
-                && (this.content.equals(obj2.getContent()))) {
-
-            return true;
-        }
-
-        return false;
+    public Date getWroteOn() {
+        return wroteOn;
     }
 
-    public int hashCode() {
-        int tmp = 0;
+    private void setWroteOn(Date wroteOn) {
+        this.wroteOn = wroteOn;
+    }
 
-        tmp = (id + user + content).hashCode();
-
-        return tmp;
+    @Override
+    public int compareTo(Message message) {
+        return message.getWroteOn().compareTo(wroteOn);
     }
 }

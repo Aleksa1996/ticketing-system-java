@@ -1,5 +1,7 @@
 package com.aleksa1996.ticketingsystem.application.dto;
 
+import java.util.Set;
+
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +16,7 @@ public class AgentDtoMapper implements DtoMapper<Agent, AgentDto> {
     }
 
     @Override
-    public AgentDto collection(Agent collection) {
+    public Set<AgentDto> collection(Set<Agent> collection) {
         throw new NotImplementedException();
     }
 }

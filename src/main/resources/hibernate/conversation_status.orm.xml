@@ -14,6 +14,6 @@
                 <param name="enumClass">com.aleksa1996.ticketingsystem.domain.ConversationStatusState</param>
             </type>
         </property>
-        <property name="description" column="description" type="string"/>
+        <property name="description" column="description" type="string" length="100"/>
     </class>
 </hibernate-mapping>
