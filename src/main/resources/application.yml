@@ -32,3 +32,5 @@ spring:
   security:
     user:
       password: "user123"
+  jwt:
+    secret: H3l1oT0JWT

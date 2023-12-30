@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.aleksa1996.ticketingsystem.application.dto.AgentDto;
@@ -23,6 +24,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @Validated
+@RequestMapping("/api/v1")
 public class TicketingSystemController {
 
     @Autowired
@@ -31,7 +33,7 @@ public class TicketingSystemController {
     @PostMapping("/agents")
     public ResponseEntity<AgentDto> createAgent(@Valid @RequestBody CreateAgentRequest request) {
 
-        AgentDto agent = ticketingSystemService.createAgent(request.name(), request.email());
+        AgentDto agent = ticketingSystemService.createAgent(request.name(), request.email(), request.password());
 
         return ResponseEntity.ok(agent);
     }
@@ -110,6 +112,6 @@ public class TicketingSystemController {
     @SendTo("/conversations/{id}/topic")
     public void sendMessageToConversation() {
 
-        ticketingSystemService.openNewConversation("", "", "", "");
+        // ticketingSystemService.openNewConversation("", "", "", "");
     }
 }

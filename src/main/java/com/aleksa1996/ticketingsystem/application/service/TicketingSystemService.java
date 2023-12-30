@@ -45,20 +45,21 @@ public class TicketingSystemService {
     @Autowired
     private ConversationMessageDtoMapper conversationMessageDtoMapper;
 
-    public AgentDto createAgent(String name, String email) {
+    public AgentDto createAgent(String name, String email, String password) {
         Optional<Agent> agent = agentRepository.findByEmail(email);
 
         if (agent.isPresent()) {
             throw new AgentAlreadyExists("Agent with email: [%s] already exists.".formatted(email));
         }
 
-        Agent newAgent = new Agent(UUID.randomUUID(), name, email);
+        Agent newAgent = new Agent(UUID.randomUUID(), name, email, password);
         agentRepository.save(newAgent);
 
         return agentDtoMapper.item(newAgent);
     }
 
-    public ConversationDto openNewConversation(String name, String email, String subject, String message) {
+    public ConversationDto openNewConversation(String name, String email, String subject,
+            String message) {
 
         Optional<Customer> existingCustomer = customerRepository.findByEmail(email);
 

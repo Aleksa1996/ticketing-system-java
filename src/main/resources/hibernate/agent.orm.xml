@@ -3,5 +3,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping">
 
 <hibernate-mapping>
-    <subclass name="com.aleksa1996.ticketingsystem.domain.Agent" extends="com.aleksa1996.ticketingsystem.domain.User" discriminator-value="A"/>
+    <subclass name="com.aleksa1996.ticketingsystem.domain.Agent" extends="com.aleksa1996.ticketingsystem.domain.User" discriminator-value="A">
+        <property name="password" column="password" type="string" length="500"/>
+    </subclass>
 </hibernate-mapping>
