@@ -1,4 +1,11 @@
 spring:
+  mail:
+    host: mailcatcher
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
   datasource:
     # url: jdbc:h2:file:/var/www/html/data/ticketing-system-service
     url: jdbc:h2:mem:ticketing-system-service
