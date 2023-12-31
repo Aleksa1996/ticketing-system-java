@@ -2,6 +2,24 @@ version: '3.8'
 
 services:
 # ---------------------------------------------------------------------------- #
+#                                 Traefik                                      #
+# ---------------------------------------------------------------------------- #
+    traefik:
+        container_name: 'traefik'
+        image: 'traefik:v2.9.6'
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock:ro'
+        command: 
+            - '--api.insecure=true'
+            - '--providers.docker=true'
+            - '--providers.docker.exposedbydefault=false'
+            - '--entrypoints.web.address=:80'
+        ports:
+            - '80:80'
+            - '443:443'
+            - '8080:8080'
+        restart: unless-stopped
+# ---------------------------------------------------------------------------- #
 #                                 Java                                         #
 # ---------------------------------------------------------------------------- #
     java:
@@ -10,20 +28,46 @@ services:
         volumes:
             - './backend:/var/www/html'
         command: 'tail -f /dev/null'
-        ports:
-           - '8081:8081'
         restart: unless-stopped
+        labels:
+            - 'traefik.enable=true'
+            - 'traefik.http.routers.backend.entrypoints=web'
+            - 'traefik.http.routers.backend.rule=Host(`backend.local`)'
+            - 'traefik.http.routers.backend.service=backend'
+            - 'traefik.http.services.backend.loadbalancer.server.port=8081'
+
+            - 'traefik.http.routers.frontend-api.entrypoints=web'
+            - 'traefik.http.routers.frontend-api.rule=Host(`frontend.local`) && PathPrefix(`/api`)'
+            - 'traefik.http.routers.frontend-api.service=frontend-api'
+            - 'traefik.http.services.frontend-api.loadbalancer.server.port=8081'
 # ---------------------------------------------------------------------------- #
 #                                 Frontend                                     #
 # ---------------------------------------------------------------------------- #
     frontend:
-        container_name: 'frontend-java'
+        container_name: 'frontend'
         image: 'dev-build/frontend-java'
         build:
             context: './frontend'
-            dockerfile: Dockerfile.dev
+            dockerfile: Dockerfile
         volumes:
             - './frontend:/var/www/html'
-        ports:
-           - '3000:3000'
         restart: unless-stopped
+        labels:
+            - 'traefik.enable=true'
+            - 'traefik.http.routers.frontend.entrypoints=web'
+            - 'traefik.http.routers.frontend.rule=Host(`frontend.local`)'
+            - 'traefik.http.routers.frontend.service=frontend'
+            - 'traefik.http.services.frontend.loadbalancer.server.port=3000'
+# ---------------------------------------------------------------------------- #
+#                                 Mailcatcher                                  #
+# ---------------------------------------------------------------------------- #
+    mailcatcher:
+        container_name: 'mailcatcher'
+        image: 'dockage/mailcatcher:0.9.0'
+        restart: unless-stopped
+        labels:
+            - 'traefik.enable=true'
+            - 'traefik.http.routers.mailcatcher.entrypoints=web'
+            - 'traefik.http.routers.mailcatcher.rule=Host(`mailcatcher.local`)'
+            - 'traefik.http.routers.mailcatcher.service=mailcatcher'
+            - 'traefik.http.services.mailcatcher.loadbalancer.server.port=1080'
