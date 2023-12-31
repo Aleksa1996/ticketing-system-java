@@ -11,3 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+body {
+  background-color: #f7f8f9;
+}
+
+.text-primary-color {
+  color: #40364d !important;
+}
+
+.text-secondary-color {
+  color: #5f6c73 !important;
+}
+
+.btn-background-color {
+  background: #40364d !important;
+  color: white !important;
+  border-color: #40364d !important;
+}
+
+.main-content-container {
+  min-height: 75vh;
+}
