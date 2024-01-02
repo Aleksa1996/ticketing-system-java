@@ -6,6 +6,7 @@ import Login from './Login';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
+import Conversations from './Conversations';
 
 const router = createHashRouter([
 	{
@@ -16,6 +17,11 @@ const router = createHashRouter([
 	{
 		path: '/login',
 		element: <Login />,
+		children: [],
+	},
+	{
+		path: '/conversations',
+		element: <Conversations />,
 		children: [],
 	},
 ]);
