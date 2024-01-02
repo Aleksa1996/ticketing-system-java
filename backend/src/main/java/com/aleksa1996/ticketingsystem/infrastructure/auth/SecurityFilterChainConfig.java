@@ -45,7 +45,7 @@ public class SecurityFilterChainConfig {
                         auth -> {
                             try {
                                 auth
-                                        .requestMatchers(mvcMatcherBuilder.pattern("/auth/v1/**"))
+                                        .requestMatchers(mvcMatcherBuilder.pattern("/api/v1/auth/login"))
                                         .permitAll()
                                         .requestMatchers(
                                                 mvcMatcherBuilder.pattern(HttpMethod.POST, "/api/v1/conversations"))

@@ -111,7 +111,6 @@ function ContactSupport(props) {
 				message: 'Form submitted successfully.',
 			});
 			resetForm();
-			return;
 		}
 
 		if (response.status >= 500) {
@@ -119,7 +118,6 @@ function ContactSupport(props) {
 				success: false,
 				message: 'Server side error, please try again later.',
 			});
-			return;
 		}
 
 		if (response.status >= 400 && response.status < 500) {
@@ -127,7 +125,6 @@ function ContactSupport(props) {
 				success: false,
 				message: 'Client side error, please try again later.',
 			});
-			return;
 		}
 	};
 

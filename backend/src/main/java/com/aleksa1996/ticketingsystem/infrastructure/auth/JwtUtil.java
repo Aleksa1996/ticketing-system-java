@@ -21,28 +21,21 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    public String issueToken(String subject) {
-        return issueToken(subject, Map.of());
-    }
-
-    public String issueToken(String subject, String... scopes) {
-        return issueToken(subject, Map.of("scopes", scopes));
-    }
-
-    public String issueToken(String subject, List<String> scopes) {
-        return issueToken(subject, Map.of("scopes", scopes));
+    public String issueToken(String subject, List<String> scopes, long durationInMinutes) {
+        return issueToken(subject, Map.of("scopes", scopes), durationInMinutes);
     }
 
     public String issueToken(
             String subject,
-            Map<String, Object> claims) {
+            Map<String, Object> claims,
+            long durationInMinutes) {
 
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuer("https://ticketing-system.com")
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plus(15, ChronoUnit.DAYS)))
+                .setExpiration(Date.from(Instant.now().plus(durationInMinutes, ChronoUnit.MINUTES)))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
 

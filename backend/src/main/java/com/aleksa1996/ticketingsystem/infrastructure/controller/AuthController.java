@@ -19,7 +19,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @Validated
-@RequestMapping("/auth/v1")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     @Autowired
@@ -44,8 +44,8 @@ public class AuthController {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String jwtToken = jwtUtil.issueToken(userDetails.getUsername(), userDetails.getRoles());
+        String jwtToken = jwtUtil.issueToken(userDetails.getUsername(), userDetails.getRoles(), 30);
 
-        return ResponseEntity.ok(new LoginResponse(jwtToken, 121212, "Bearer"));
+        return ResponseEntity.ok(new LoginResponse(jwtToken, 30 * 60, "Bearer"));
     }
 }
