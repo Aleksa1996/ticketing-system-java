@@ -5,7 +5,7 @@ import SearchSupport from './SearchSupport';
 function Home(props) {
 	return (
 		<Layout>
-			<h1 className="mb-5 text-primary-color text-center">
+			<h1 className="mt-5 mb-5 text-primary-color text-center">
 				How can we help you?
 			</h1>
 

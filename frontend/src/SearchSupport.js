@@ -1,4 +1,4 @@
-import { Form, FormControl, Card } from 'react-bootstrap';
+import { Form, FormControl, Card, Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
 
 var faqs = [
@@ -137,6 +137,16 @@ var faqs = [
 function SearchSupport(props) {
 	const [searchTerm, setSearchTerm] = useState('');
 
+	let showFaqs = [...faqs];
+	if (searchTerm != '') {
+		showFaqs = showFaqs.filter(
+			(item) =>
+				item.subject.toLowerCase().includes(searchTerm) ||
+				item.question.toLowerCase().includes(searchTerm) ||
+				item.answer.toLowerCase().includes(searchTerm)
+		);
+	}
+
 	return (
 		<>
 			<Form className="mt-4">
@@ -151,39 +161,25 @@ function SearchSupport(props) {
 				</Form.Group>
 			</Form>
 
-			<div>
-				{searchTerm != '' &&
-					faqs
-						.filter(
-							(item) =>
-								item.subject
-									.toLowerCase()
-									.includes(searchTerm) ||
-								item.question
-									.toLowerCase()
-									.includes(searchTerm) ||
-								item.answer.toLowerCase().includes(searchTerm)
-						)
-						.slice(0, 5)
-						.map((item) => (
-							<Card
-								className="text-left mb-2 mt-2"
-								key={item.answer}
-							>
-								<Card.Body>
-									<Card.Title className="font-weight-bold">
-										{item.question}
-									</Card.Title>
-									<Card.Text className="small mb-1 ps-1">
-										{item.subject}
-									</Card.Text>
-									<Card.Text className="small ps-1">
-										{item.answer}
-									</Card.Text>
-								</Card.Body>
-							</Card>
-						))}
-			</div>
+			<Row className="mt-4">
+				{showFaqs.slice(0, 5).map((item) => (
+					<Col md="6" key={item.answer}>
+						<Card className="text-left mb-2 mt-2">
+							<Card.Body>
+								<Card.Title className="font-weight-bold">
+									{item.question}
+								</Card.Title>
+								<Card.Text className="small mb-1 ps-1">
+									{item.subject}
+								</Card.Text>
+								<Card.Text className="small ps-1">
+									{item.answer}
+								</Card.Text>
+							</Card.Body>
+						</Card>
+					</Col>
+				))}
+			</Row>
 		</>
 	);
 }
