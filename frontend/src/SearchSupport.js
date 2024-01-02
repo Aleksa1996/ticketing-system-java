@@ -141,9 +141,11 @@ function SearchSupport(props) {
 	if (searchTerm != '') {
 		showFaqs = showFaqs.filter(
 			(item) =>
-				item.subject.toLowerCase().includes(searchTerm) ||
-				item.question.toLowerCase().includes(searchTerm) ||
-				item.answer.toLowerCase().includes(searchTerm)
+				item.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				item.question
+					.toLowerCase()
+					.includes(searchTerm.toLowerCase()) ||
+				item.answer.toLowerCase().includes(searchTerm.toLowerCase())
 		);
 	}
 
