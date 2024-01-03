@@ -9,6 +9,7 @@
             <generator class="native"/>
         </id>
 
+        <property name="userId" column="userr_id" type="uuid"/>
         <property name="user" column="userr" type="string" length="255"/>
         <property name="content" column="content" type="string" length="500"/>
         <property name="wroteOn" column="wrote_on" type="timestamp"/>

@@ -2,17 +2,21 @@ package com.aleksa1996.ticketingsystem.infrastructure.auth;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
 
+    private UUID id;
+
     private String email;
 
     private String password;
 
-    public UserDetails(String email, String password) {
+    public UserDetails(UUID id, String email, String password) {
+        this.id = id;
         this.email = email;
         this.password = password;
     }
@@ -22,14 +26,18 @@ public class UserDetails implements org.springframework.security.core.userdetail
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
-    @Override
-    public String getPassword() {
-        return password;
+    public UUID getId() {
+        return id;
     }
 
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override
@@ -55,5 +63,4 @@ public class UserDetails implements org.springframework.security.core.userdetail
     public List<String> getRoles() {
         return List.of("ROLE_USER");
     }
-
 }

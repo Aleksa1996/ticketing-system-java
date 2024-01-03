@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import com.aleksa1996.ticketingsystem.application.dto.AgentDto;
 import com.aleksa1996.ticketingsystem.application.dto.AgentDtoMapper;
@@ -47,6 +49,9 @@ public class TicketingSystemService {
     @Autowired
     private ConversationMessageDtoMapper conversationMessageDtoMapper;
 
+    @Autowired
+    private JavaMailSender mailSender;
+
     public AgentDto createAgent(String name, String email, String password) {
         Optional<Agent> agent = agentRepository.findByEmail(email);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12, new SecureRandom());
@@ -72,6 +77,17 @@ public class TicketingSystemService {
         Conversation conversation = Conversation.open(subject, customer, message);
 
         conversationRepository.save(conversation);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(email);
+        mailMessage.setSubject("[Ticketing System] - You successfully opened new ticket - " + subject);
+
+        String body = "Thank you for submitting ticket! \n\nDetails: \n Name: " + name + " \n Email: " + email
+                + " \n Subject: " + subject + " \n Message: " + message
+                + "\n\n Click on this link to chat with our support: http://frontend.local/#/conversations/"
+                + conversation.getId().toString() + "?customerId=" + customer.getId().toString();
+        mailMessage.setText(body);
+        mailSender.send(mailMessage);
 
         return conversationDtoMapper.item(conversation);
     }

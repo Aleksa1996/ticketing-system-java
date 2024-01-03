@@ -14,6 +14,7 @@ public class ConversationMessageDtoMapper implements DtoMapper<Message, Conversa
 
         return new ConversationMessageDto(
                 item.getId(),
+                item.getUserId(),
                 item.getUser(),
                 item.getContent(),
                 item.getWroteOn());

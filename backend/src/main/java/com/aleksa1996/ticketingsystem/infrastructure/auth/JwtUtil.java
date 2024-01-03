@@ -12,7 +12,6 @@ import java.security.Key;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,10 +19,6 @@ public class JwtUtil {
 
     @Value("${jwt.secret}")
     private String SECRET_KEY;
-
-    public String issueToken(String subject, List<String> scopes, long durationInMinutes) {
-        return issueToken(subject, Map.of("scopes", scopes), durationInMinutes);
-    }
 
     public String issueToken(
             String subject,

@@ -50,6 +50,12 @@ public class SecurityFilterChainConfig {
                                         .requestMatchers(
                                                 mvcMatcherBuilder.pattern(HttpMethod.POST, "/api/v1/conversations"))
                                         .permitAll()
+                                        .requestMatchers(
+                                                mvcMatcherBuilder.pattern(HttpMethod.POST, "/api/v1/conversations/{id}/messages"))
+                                        .permitAll()
+                                        .requestMatchers(
+                                                mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/v1/conversations/{id}/messages"))
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated()
                                         .and()

@@ -39,7 +39,7 @@ const validateFormData = (formData) => {
 	return errors;
 };
 
-const openNewConversation = async (name, email, subject, message) => {
+const openNewConversation = (name, email, subject, message) => {
 	return fetch('/api/v1/conversations', {
 		method: 'POST',
 		headers: {

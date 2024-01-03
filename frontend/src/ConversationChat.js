@@ -1,102 +1,73 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 import moment from 'moment';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { UserContext } from './UserContext';
 
-const validateFormData = (formData) => {
-	const errors = {};
-
-	if (!formData.name.trim()) {
-		errors.name = 'Name is required';
-	} else if (
-		formData.name.trim().length < 2 ||
-		formData.name.trim().length > 255
-	) {
-		errors.name = 'Name should be between 2 and 255 characters';
-	}
-
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-	if (!formData.email.trim() || !emailRegex.test(formData.email)) {
-		errors.email = 'Valid email is required';
-	}
-
-	if (!formData.subject.trim()) {
-		errors.subject = 'Subject is required';
-	} else if (
-		formData.subject.trim().length < 2 ||
-		formData.subject.trim().length > 255
-	) {
-		errors.subject = 'Subject should be between 2 and 255 characters';
-	}
-
-	if (!formData.message.trim()) {
-		errors.message = 'Message is required';
-	} else if (
-		formData.message.trim().length < 2 ||
-		formData.message.trim().length > 255
-	) {
-		errors.message = 'Message should be between 2 and 255 characters';
-	}
-
-	return errors;
+const getMessages = (id) => {
+	return fetch(`/api/v1/conversations/${id}/messages`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
 };
 
-const openNewConversation = async (name, email, subject, message) => {
-	return fetch('/api/v1/conversations', {
+const writeMessage = (id, userId, content) => {
+	return fetch(`/api/v1/conversations/${id}/messages`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
-			name,
-			email,
-			subject,
-			message,
+			userId,
+			content,
 		}),
 	});
 };
 
-const messages = [
-	{
-		id: 4,
-		user: 'Aleksa Jovanovic',
-		content: 'Test',
-		wroteOn: 1704230907047,
-		isAgent: false,
-	},
-	{
-		id: 2,
-		user: 'Aleksa Jovanovic',
-		content: 'Test',
-		wroteOn: 1704230907047,
-		isAgent: true,
-	},
-	{
-		id: 1,
-		user: 'Aleksa Jovanovic',
-		content: 'Test',
-		wroteOn: 1704230907047,
-		isAgent: false,
-	},
-	{
-		id: 56,
-		user: 'Aleksa Jovanovic',
-		content: 'Test',
-		wroteOn: 1704230907047,
-		isAgent: true,
-	},
-	{
-		id: 23,
-		user: 'Aleksa Jovanovic',
-		content: 'Test',
-		wroteOn: 1704230907100,
-		isAgent: false,
-	},
-];
-
 function ConversationChat(props) {
+	const [messages, setMessages] = useState([]);
 	const [message, setMessage] = useState('');
+	const [searchParams, setSearchParams] = useSearchParams();
+	const { id } = useParams();
+	const { user, setUser } = useContext(UserContext);
 
-	const handleSubmit = (e) => {};
+	const customerId = searchParams.get('customerId');
+
+	let userId = null;
+	if (user) {
+		userId = user.id;
+	}
+
+	if (customerId) {
+		userId = customerId;
+	}
+
+	const loadMessages = (id) =>
+		getMessages(id)
+			.then((response) => response.json())
+			.then((response) => {
+				console.log(response);
+				setMessages(response.sort((a, b) => a.wroteOn - b.wroteOn));
+			});
+
+	useEffect(() => {
+		loadMessages(id);
+	}, []);
+
+	const onChange = (e) => {
+		setMessage(e.target.value);
+	};
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+
+		writeMessage(id, userId, message).then((response) => {
+			setMessage('');
+		});
+	};
+
 	return (
 		<div className="container py-5 px-4">
 			<div className="row overflow-hidden shadow border">
@@ -349,10 +320,10 @@ function ConversationChat(props) {
 							<div
 								key={m.id}
 								className={`media w-50 mb-3 ${
-									m.isAgent ? '' : 'ms-auto'
+									m.userId != userId ? '' : 'ms-auto'
 								}`}
 							>
-								{m.isAgent && (
+								{m.userId != userId && (
 									<img
 										src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
 										alt="user"
@@ -363,19 +334,19 @@ function ConversationChat(props) {
 
 								<div
 									className={`media-body ${
-										m.isAgent ? 'ml-3' : ''
+										m.userId != userId ? 'ml-3' : ''
 									}`}
 								>
 									<div
 										className={`${
-											m.isAgent
+											m.userId != userId
 												? 'bg-light'
 												: 'bg-primary'
 										} rounded py-2 px-3 mb-2`}
 									>
 										<p
 											className={`text-small mb-0 ${
-												m.isAgent
+												m.userId != userId
 													? 'text-muted'
 													: 'text-white'
 											} `}
@@ -384,9 +355,9 @@ function ConversationChat(props) {
 										</p>
 									</div>
 									<p className="small text-muted">
-										{moment
-											.unix(m.wroteOn)
-											.format('LT | MMM MM')}
+										{moment(m.wroteOn)
+											.utc()
+											.format('LT | MMM DD')}
 									</p>
 								</div>
 							</div>
@@ -394,13 +365,21 @@ function ConversationChat(props) {
 					</div>
 
 					{/* <!-- Typing area --> */}
-					<form action="#" className="bg-light typing-area">
+					<form
+						action="#"
+						noValidate
+						onSubmit={handleSubmit}
+						className="bg-light typing-area"
+					>
 						<div className="input-group">
 							<input
+								name="message"
 								type="text"
 								placeholder="Type a message"
 								aria-describedby="button-addon2"
 								className="form-control rounded-0 bg-light typing-area-input py-4 shadow-none"
+								onChange={onChange}
+								value={message}
 							/>
 							<div className="input-group-append">
 								<button

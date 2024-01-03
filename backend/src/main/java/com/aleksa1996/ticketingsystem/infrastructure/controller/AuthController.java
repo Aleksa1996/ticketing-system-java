@@ -1,5 +1,8 @@
 package com.aleksa1996.ticketingsystem.infrastructure.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,7 +47,12 @@ public class AuthController {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String jwtToken = jwtUtil.issueToken(userDetails.getUsername(), userDetails.getRoles(), 30);
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put("id", userDetails.getId());
+        claims.put("scopes", userDetails.getRoles());
+
+        String jwtToken = jwtUtil.issueToken(userDetails.getUsername(), claims, 30);
 
         return ResponseEntity.ok(new LoginResponse(jwtToken, 30 * 60, "Bearer"));
     }

@@ -1,10 +1,13 @@
 package com.aleksa1996.ticketingsystem.domain;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class Message implements Comparable<Message> {
 
     private int id;
+
+    private UUID userId;
 
     private String user;
 
@@ -16,8 +19,9 @@ public class Message implements Comparable<Message> {
         super();
     }
 
-    public Message(String user, String content) {
+    public Message(UUID userId, String user, String content) {
 
+        setUserId(userId);
         setUser(user);
         setContent(content);
         setWroteOn(new Date());
@@ -29,6 +33,14 @@ public class Message implements Comparable<Message> {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    private void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public String getUser() {

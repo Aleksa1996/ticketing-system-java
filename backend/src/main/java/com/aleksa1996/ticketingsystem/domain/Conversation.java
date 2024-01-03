@@ -76,21 +76,18 @@ public class Conversation extends Entity {
     }
 
     public void writeMessage(UUID userId, String content) {
-        String user = null;
 
         if (customer.getId().equals(userId)) {
-            user = customer.getName();
+            messages.add(new Message(customer.getId(), customer.getName(), content));
+            return;
         }
 
         if (assignedAgent != null && assignedAgent.getId().equals(userId)) {
-            user = assignedAgent.getName();
+            messages.add(new Message(assignedAgent.getId(), assignedAgent.getName(), content));
+            return;
         }
 
-        if (user == null) {
-            throw new UserDoesNotBelongToConversation();
-        }
-
-        messages.add(new Message(user, content));
+        throw new UserDoesNotBelongToConversation();
     }
 
     public static Conversation open(String subject, Customer customer, String message) {
@@ -104,7 +101,7 @@ public class Conversation extends Entity {
     }
 
     public void close() {
-        
+
         statuses
                 .add(new ConversationStatus(ConversationStatusState.CLOSED, "Conversation has been closed"));
     }

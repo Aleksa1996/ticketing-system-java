@@ -17,7 +17,7 @@ const validateFormData = (formData) => {
 	return errors;
 };
 
-const login = async (email, password) => {
+const login = (email, password) => {
 	return fetch('/api/v1/auth/login', {
 		method: 'POST',
 		headers: {
