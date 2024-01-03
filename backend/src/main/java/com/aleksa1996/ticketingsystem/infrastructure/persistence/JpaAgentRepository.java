@@ -40,7 +40,6 @@ public class JpaAgentRepository implements UserRepository<Agent> {
 
     @Override
     public Set<Agent> query(int size, int page) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'query'");
     }
 }

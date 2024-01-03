@@ -39,4 +39,12 @@ public class JpaConversationRepository implements ConversationRepository {
         // Page starts from zero, wtf o.O
         return repository.findAll(PageRequest.of(page < 0 ? 0 : (page == 0 ? page : page - 1), size)).toSet();
     }
+
+    @Override
+    public Set<Conversation> queryByUserId(UUID userId, int size, int page) {
+        return repository
+                .findByAssignedAgentIdOrCustomerId(userId,
+                        PageRequest.of(page < 0 ? 0 : (page == 0 ? page : page - 1), size))
+                .toSet();
+    }
 }

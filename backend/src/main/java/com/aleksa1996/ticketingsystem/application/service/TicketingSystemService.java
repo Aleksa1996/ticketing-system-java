@@ -113,6 +113,11 @@ public class TicketingSystemService {
         return conversationDtoMapper.collection(conversationRepository.query(size, page));
     }
 
+    public Set<ConversationDto> conversations(int size, int page, UUID userId) {
+
+        return conversationDtoMapper.collection(conversationRepository.queryByUserId(userId, size, page));
+    }
+
     @Transactional
     public ConversationDto assignAgentToConversation(UUID id, UUID agentId) {
 

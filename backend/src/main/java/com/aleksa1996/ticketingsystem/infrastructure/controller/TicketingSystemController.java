@@ -59,9 +59,14 @@ public class TicketingSystemController {
     @GetMapping("/conversations")
     public ResponseEntity<Set<ConversationDto>> conversations(
             @RequestParam(name = "size", required = false, defaultValue = "10") int size,
-            @RequestParam(name = "page", required = false, defaultValue = "1") int page) {
+            @RequestParam(name = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(name = "userId", required = false, defaultValue = "") String userId) {
 
-        return ResponseEntity.ok(ticketingSystemService.conversations(size, page));
+        if (userId.isEmpty()) {
+            return ResponseEntity.ok(ticketingSystemService.conversations(size, page));
+        }
+
+        return ResponseEntity.ok(ticketingSystemService.conversations(size, page, java.util.UUID.fromString(userId)));
     }
 
     @PostMapping("/conversations/{id}/assign-agent")
