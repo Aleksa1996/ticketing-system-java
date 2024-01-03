@@ -1,8 +1,9 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 import moment from 'moment';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { json, useParams, useSearchParams } from 'react-router-dom';
 import { UserContext } from './UserContext';
+import { Client } from '@stomp/stompjs';
 
 const getMessages = (id) => {
 	return fetch(`/api/v1/conversations/${id}/messages`, {
@@ -26,12 +27,16 @@ const writeMessage = (id, userId, content) => {
 	});
 };
 
+let websocketClient = null;
+
 function ConversationChat(props) {
 	const [messages, setMessages] = useState([]);
 	const [message, setMessage] = useState('');
 	const [searchParams, setSearchParams] = useSearchParams();
 	const { id } = useParams();
 	const { user, setUser } = useContext(UserContext);
+
+	const scrollContainerRef = useRef(null);
 
 	const customerId = searchParams.get('customerId');
 
@@ -48,13 +53,40 @@ function ConversationChat(props) {
 		getMessages(id)
 			.then((response) => response.json())
 			.then((response) => {
-				console.log(response);
 				setMessages(response.sort((a, b) => a.wroteOn - b.wroteOn));
 			});
 
+	const createWebSocketClient = () => {
+		return new Client({
+			brokerURL: 'ws://frontend.local/websocket',
+		});
+	};
+
 	useEffect(() => {
 		loadMessages(id);
-	}, []);
+
+		websocketClient = createWebSocketClient(id);
+		websocketClient.onConnect = () => {
+			websocketClient.subscribe(
+				`/topic/conversations/${id}/messages`,
+				(message) => loadMessages(id)
+			);
+		};
+		websocketClient.activate();
+
+		return () => {
+			if (websocketClient) {
+				websocketClient.deactivate();
+			}
+		};
+	}, [id]);
+
+	useEffect(() => {
+		if (scrollContainerRef.current) {
+			const scrollContainer = scrollContainerRef.current;
+			scrollContainer.scrollTop = scrollContainer.scrollHeight;
+		}
+	}, [messages]);
 
 	const onChange = (e) => {
 		setMessage(e.target.value);
@@ -314,7 +346,10 @@ function ConversationChat(props) {
 				</div>
 				{/* <!-- Chat Box--> */}
 				<div className="col-7 px-0">
-					<div className="px-4 py-5 chat-box bg-white">
+					<div
+						className="px-4 py-5 chat-box bg-white"
+						ref={scrollContainerRef}
+					>
 						{/* <!-- Sender Message--> */}
 						{messages.map((m) => (
 							<div
