@@ -4,14 +4,15 @@ services:
 # ---------------------------------------------------------------------------- #
 #                                 Traefik                                      #
 # ---------------------------------------------------------------------------- #
-    traefik:
-        container_name: 'traefik'
+    proxy:
+        container_name: 'proxy'
         image: 'traefik:v2.9.6'
         volumes:
             - '/var/run/docker.sock:/var/run/docker.sock:ro'
         command: 
             - '--api.insecure=true'
             - '--providers.docker=true'
+            - '--log.level=DEBUG'
             - '--providers.docker.exposedbydefault=false'
             - '--entrypoints.web.address=:80'
         ports:
@@ -22,8 +23,8 @@ services:
 # ---------------------------------------------------------------------------- #
 #                                 Java                                         #
 # ---------------------------------------------------------------------------- #
-    java:
-        container_name: 'java'
+    backend:
+        container_name: 'backend'
         image: 'eclipse-temurin:17-jdk-jammy'
         volumes:
             - './backend:/var/www/html'
@@ -37,7 +38,7 @@ services:
             - 'traefik.http.services.backend.loadbalancer.server.port=8081'
 
             - 'traefik.http.routers.frontend-api.entrypoints=web'
-            - 'traefik.http.routers.frontend-api.rule=Host(`frontend.local`) && PathPrefix(`/api`)'
+            - 'traefik.http.routers.frontend-api.rule=Host(`frontend.local`) && (PathPrefix(`/api`) || PathPrefix(`/websocket`))'
             - 'traefik.http.routers.frontend-api.service=frontend-api'
             - 'traefik.http.services.frontend-api.loadbalancer.server.port=8081'
 # ---------------------------------------------------------------------------- #
