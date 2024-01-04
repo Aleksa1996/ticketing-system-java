@@ -75,6 +75,10 @@ public class Conversation extends Entity {
         this.messages = messages;
     }
 
+    public Message getLastMessage() {
+        return messages.stream().findFirst().get();
+    }
+
     public void writeMessage(UUID userId, String content) {
 
         if (customer.getId().equals(userId)) {

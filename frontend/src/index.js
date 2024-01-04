@@ -22,7 +22,7 @@ const router = createHashRouter([
 		children: [],
 	},
 	{
-		path: '/conversations/:id',
+		path: '/conversations',
 		element: <Conversations />,
 		children: [],
 	},

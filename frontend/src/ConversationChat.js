@@ -1,9 +1,27 @@
 import { useEffect, useState, useContext, useRef } from 'react';
 import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 import moment from 'moment';
-import { json, useParams, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { UserContext } from './UserContext';
 import { Client } from '@stomp/stompjs';
+
+const getConversations = (id) => {
+	return fetch(`/api/v1/conversations?page=1&size=20&userId=${id}`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+};
+
+const getConversation = (id) => {
+	return fetch(`/api/v1/conversations/${id}`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+};
 
 const getMessages = (id) => {
 	return fetch(`/api/v1/conversations/${id}/messages`, {
@@ -30,30 +48,64 @@ const writeMessage = (id, userId, content) => {
 let websocketClient = null;
 
 function ConversationChat(props) {
-	const [messages, setMessages] = useState([]);
-	const [message, setMessage] = useState('');
-	const [searchParams, setSearchParams] = useSearchParams();
-	const { id } = useParams();
-	const { user, setUser } = useContext(UserContext);
-
 	const scrollContainerRef = useRef(null);
 
-	const customerId = searchParams.get('customerId');
+	const [connversation, setConversation] = useState(null);
+	const [conversations, setConversations] = useState([]);
+
+	const [messages, setMessages] = useState([]);
+	const [message, setMessage] = useState('');
+
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const { user, setUser } = useContext(UserContext);
 
 	let userId = null;
 	if (user) {
 		userId = user.id;
 	}
 
-	if (customerId) {
-		userId = customerId;
+	if (searchParams.has('userId')) {
+		userId = searchParams.get('userId');
 	}
+
+	const conversationId = searchParams.has('conversationId')
+		? searchParams.get('conversationId')
+		: null;
+
+	const loadConversation = (id) =>
+		getConversation(id)
+			.then((response) => response.json())
+			.then((response) => {
+				if (!response.error) {
+					setConversation(response);
+				}
+			});
+
+	useEffect(() => {
+		loadConversation(conversationId);
+	}, [conversationId]);
+
+	const loadConversations = (id) =>
+		getConversations(id)
+			.then((response) => response.json())
+			.then((response) => {
+				if (!response.error) {
+					setConversations(response);
+				}
+			});
+
+	useEffect(() => {
+		loadConversations(userId);
+	}, [userId]);
 
 	const loadMessages = (id) =>
 		getMessages(id)
 			.then((response) => response.json())
 			.then((response) => {
-				setMessages(response.sort((a, b) => a.wroteOn - b.wroteOn));
+				if (!response.error) {
+					setMessages(response.sort((a, b) => a.wroteOn - b.wroteOn));
+				}
 			});
 
 	const createWebSocketClient = () => {
@@ -63,13 +115,16 @@ function ConversationChat(props) {
 	};
 
 	useEffect(() => {
-		loadMessages(id);
+		loadMessages(conversationId);
 
-		websocketClient = createWebSocketClient(id);
+		websocketClient = createWebSocketClient();
 		websocketClient.onConnect = () => {
 			websocketClient.subscribe(
-				`/topic/conversations/${id}/messages`,
-				(message) => loadMessages(id)
+				`/topic/conversations/${conversationId}/messages`,
+				(message) => {
+					loadConversations(userId);
+					loadMessages(conversationId);
+				}
 			);
 		};
 		websocketClient.activate();
@@ -79,7 +134,7 @@ function ConversationChat(props) {
 				websocketClient.deactivate();
 			}
 		};
-	}, [id]);
+	}, [conversationId]);
 
 	useEffect(() => {
 		if (scrollContainerRef.current) {
@@ -95,7 +150,7 @@ function ConversationChat(props) {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
-		writeMessage(id, userId, message).then((response) => {
+		writeMessage(conversationId, userId, message).then((response) => {
 			setMessage('');
 		});
 	};
@@ -104,248 +159,52 @@ function ConversationChat(props) {
 		<div className="container py-5 px-4">
 			<div className="row overflow-hidden shadow border">
 				{/* <!-- Users box--> */}
-				<div className="col-5 px-0">
+				<div className="col-4 px-0">
 					<div className="bg-white">
 						<div className="messages-box">
 							<div className="list-group rounded-0">
-								<a className="list-group-item list-group-item-action py-3 active text-white rounded-0">
-									<div className="media">
-										<img
-											src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-											alt="user"
-											width="50"
-											className="rounded-circle"
-										/>
-										<div className="media-body ml-4">
-											<div className="d-flex align-items-center justify-content-between mb-1">
-												<h6 className="mb-0">
-													Jason Doe
-												</h6>
-												<small className="small font-weight-bold">
-													25 Dec
-												</small>
+								{conversations.map((c) => (
+									<a
+										key={c.id}
+										className="list-group-item list-group-item-action py-3 active text-white rounded-0"
+									>
+										<div className="media">
+											<div className="row">
+												<div className="col-5 d-flex justify-content-start align-items-center">
+													<img
+														src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
+														alt="user"
+														width="50"
+														className="rounded-circle"
+													/>
+													<p className="m-0 ms-2">
+														Jason Doe
+													</p>
+												</div>
+												<div className="col d-flex justify-content-end align-items-center">
+													{moment(
+														c.lastMessage.wroteOn
+													)
+														.utc()
+														.fromNow()}
+												</div>
 											</div>
-											<p className="font-italic mb-0 text-small">
-												Lorem ipsum dolor sit amet,
-												consectetur adipisicing elit,
-												sed do eiusmod tempor incididunt
-												ut labore.
-											</p>
-										</div>
-									</div>
-								</a>
 
-								<a
-									href="#"
-									className="list-group-item list-group-item-action py-3 list-group-item-light rounded-0"
-								>
-									<div className="media">
-										<img
-											src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-											alt="user"
-											width="50"
-											className="rounded-circle"
-										/>
-										<div className="media-body ml-4">
-											<div className="d-flex align-items-center justify-content-between mb-1">
-												<h6 className="mb-0">
-													Jason Doe
-												</h6>
-												<small className="small font-weight-bold">
-													14 Dec
-												</small>
+											<div className="media-body ml-4">
+												<p>{c.subject}</p>
+												<p className="font-italic mb-0 text-small">
+													{c.lastMessage.content}
+												</p>
 											</div>
-											<p className="font-italic text-muted mb-0 text-small">
-												Lorem ipsum dolor sit amet,
-												consectetur. incididunt ut
-												labore.
-											</p>
 										</div>
-									</div>
-								</a>
-
-								<a
-									href="#"
-									className="list-group-item list-group-item-action py-3 list-group-item-light rounded-0"
-								>
-									<div className="media">
-										<img
-											src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-											alt="user"
-											width="50"
-											className="rounded-circle"
-										/>
-										<div className="media-body ml-4">
-											<div className="d-flex align-items-center justify-content-between mb-1">
-												<h6 className="mb-0">
-													Jason Doe
-												</h6>
-												<small className="small font-weight-bold">
-													9 Nov
-												</small>
-											</div>
-											<p className="font-italic text-muted mb-0 text-small">
-												consectetur adipisicing elit,
-												sed do eiusmod tempor incididunt
-												ut labore.
-											</p>
-										</div>
-									</div>
-								</a>
-
-								<a
-									href="#"
-									className="list-group-item list-group-item-action py-3 list-group-item-light rounded-0"
-								>
-									<div className="media">
-										<img
-											src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-											alt="user"
-											width="50"
-											className="rounded-circle"
-										/>
-										<div className="media-body ml-4">
-											<div className="d-flex align-items-center justify-content-between mb-1">
-												<h6 className="mb-0">
-													Jason Doe
-												</h6>
-												<small className="small font-weight-bold">
-													18 Oct
-												</small>
-											</div>
-											<p className="font-italic text-muted mb-0 text-small">
-												Lorem ipsum dolor sit amet,
-												consectetur adipisicing elit,
-												sed do eiusmod tempor incididunt
-												ut labore.
-											</p>
-										</div>
-									</div>
-								</a>
-
-								<a
-									href="#"
-									className="list-group-item list-group-item-action py-3 list-group-item-light rounded-0"
-								>
-									<div className="media">
-										<img
-											src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-											alt="user"
-											width="50"
-											className="rounded-circle"
-										/>
-										<div className="media-body ml-4">
-											<div className="d-flex align-items-center justify-content-between mb-1">
-												<h6 className="mb-0">
-													Jason Doe
-												</h6>
-												<small className="small font-weight-bold">
-													17 Oct
-												</small>
-											</div>
-											<p className="font-italic text-muted mb-0 text-small">
-												consectetur adipisicing elit,
-												sed do eiusmod tempor incididunt
-												ut labore.
-											</p>
-										</div>
-									</div>
-								</a>
-
-								<a
-									href="#"
-									className="list-group-item list-group-item-action py-3 list-group-item-light rounded-0"
-								>
-									<div className="media">
-										<img
-											src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-											alt="user"
-											width="50"
-											className="rounded-circle"
-										/>
-										<div className="media-body ml-4">
-											<div className="d-flex align-items-center justify-content-between mb-1">
-												<h6 className="mb-0">
-													Jason Doe
-												</h6>
-												<small className="small font-weight-bold">
-													2 Sep
-												</small>
-											</div>
-											<p className="font-italic text-muted mb-0 text-small">
-												Quis nostrud exercitation
-												ullamco laboris nisi ut aliquip
-												ex ea commodo consequat.
-											</p>
-										</div>
-									</div>
-								</a>
-
-								<a
-									href="#"
-									className="list-group-item list-group-item-action py-3 list-group-item-light rounded-0"
-								>
-									<div className="media">
-										<img
-											src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-											alt="user"
-											width="50"
-											className="rounded-circle"
-										/>
-										<div className="media-body ml-4">
-											<div className="d-flex align-items-center justify-content-between mb-1">
-												<h6 className="mb-0">
-													Jason Doe
-												</h6>
-												<small className="small font-weight-bold">
-													30 Aug
-												</small>
-											</div>
-											<p className="font-italic text-muted mb-0 text-small">
-												Lorem ipsum dolor sit amet,
-												consectetur adipisicing elit,
-												sed do eiusmod tempor incididunt
-												ut labore.
-											</p>
-										</div>
-									</div>
-								</a>
-
-								<a
-									href="#"
-									className="list-group-item list-group-item-action py-3 list-group-item-light rounded-0"
-								>
-									<div className="media">
-										<img
-											src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-											alt="user"
-											width="50"
-											className="rounded-circle"
-										/>
-										<div className="media-body ml-4">
-											<div className="d-flex align-items-center justify-content-between mb-3">
-												<h6 className="mb-0">
-													Jason Doe
-												</h6>
-												<small className="small font-weight-bold">
-													21 Aug
-												</small>
-											</div>
-											<p className="font-italic text-muted mb-0 text-small">
-												Lorem ipsum dolor sit amet,
-												consectetur adipisicing elit,
-												sed do eiusmod tempor incididunt
-												ut labore.
-											</p>
-										</div>
-									</div>
-								</a>
+									</a>
+								))}
 							</div>
 						</div>
 					</div>
 				</div>
 				{/* <!-- Chat Box--> */}
-				<div className="col-7 px-0">
+				<div className="col-8 px-0">
 					<div
 						className="px-4 py-5 chat-box bg-white"
 						ref={scrollContainerRef}
@@ -391,7 +250,7 @@ function ConversationChat(props) {
 									</div>
 									<p className="small text-muted">
 										{moment(m.wroteOn)
-											.utc()
+											.local()
 											.format('LT | MMM DD')}
 									</p>
 								</div>

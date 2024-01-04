@@ -92,8 +92,8 @@ public class TicketingSystemService {
 
         String body = "Thank you for submitting ticket! \n\nDetails: \n Name: " + name + " \n Email: " + email
                 + " \n Subject: " + subject + " \n Message: " + message
-                + "\n\n Click on this link to chat with our support: http://frontend.local/#/conversations/"
-                + conversation.getId().toString() + "?customerId=" + customer.getId().toString();
+                + "\n\n Click on this link to chat with our support: http://frontend.local/#/conversations?conversationId="
+                + conversation.getId().toString() + "&userId=" + customer.getId().toString();
         mailMessage.setText(body);
         mailSender.send(mailMessage);
 

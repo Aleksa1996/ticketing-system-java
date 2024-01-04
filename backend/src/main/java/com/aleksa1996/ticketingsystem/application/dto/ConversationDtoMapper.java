@@ -17,6 +17,9 @@ public class ConversationDtoMapper implements DtoMapper<Conversation, Conversati
     @Autowired
     private CustomerDtoMapper customerDtoMapper;
 
+    @Autowired
+    private ConversationMessageDtoMapper conversationMessageDtoMapper;
+
     @Override
     public ConversationDto item(Conversation item) {
 
@@ -31,6 +34,7 @@ public class ConversationDtoMapper implements DtoMapper<Conversation, Conversati
                 item.getSubject(),
                 customerDtoMapper.item(item.getCustomer()),
                 (item.getAssignedAgent() == null) ? null : agentDtoMapper.item(item.getAssignedAgent()),
+                (item.getLastMessage() == null) ? null : conversationMessageDtoMapper.item(item.getLastMessage()),
                 statuses);
     }
 

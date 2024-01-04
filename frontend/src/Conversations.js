@@ -5,7 +5,7 @@ function Conversations(props) {
 	return (
 		<Layout>
 			<h1 className="mt-5 mb-3 text-primary-color text-center">
-				Conversation
+				Conversations
 			</h1>
 
 			<ConversationChat />
