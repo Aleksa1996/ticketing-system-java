@@ -7,6 +7,7 @@
 
         <id name="id" type="uuid" column="id"/>
         <property name="subject" column="name" type="string" length="100"/>
+        <property name="createdOn" column="created_on" type="timestamp"/>
 
         <many-to-one name="customer" class="com.aleksa1996.ticketingsystem.domain.Customer" column="customer_id"/>
         <many-to-one name="assignedAgent" class="com.aleksa1996.ticketingsystem.domain.Agent" column="assigned_agent_id"/>

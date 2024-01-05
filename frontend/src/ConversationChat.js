@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { UserContext } from './UserContext';
 import { Client } from '@stomp/stompjs';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const getConversations = (id) => {
 	return fetch(`/api/v1/conversations?page=1&size=20&userId=${id}`, {
@@ -61,6 +62,8 @@ function ConversationChat(props) {
 
 	const { user, setUser } = useContext(UserContext);
 
+	const navigate = useNavigate();
+
 	let isCustomer = false;
 	let userId = null;
 	if (user) {
@@ -86,6 +89,11 @@ function ConversationChat(props) {
 			});
 
 	useEffect(() => {
+		if (conversationId == null) {
+			navigate('/');
+			return;
+		}
+
 		loadConversation(conversationId);
 	}, [conversationId]);
 
@@ -118,6 +126,11 @@ function ConversationChat(props) {
 	};
 
 	useEffect(() => {
+		if (conversationId == null) {
+			navigate('/');
+			return;
+		}
+
 		loadMessages(conversationId);
 
 		websocketClient = createWebSocketClient();
@@ -192,7 +205,10 @@ function ConversationChat(props) {
 														className="rounded-circle"
 													/>
 													<p className="m-0 ms-2">
-														{c.assignedAgent.name}
+														{isCustomer
+															? c.assignedAgent
+																	.name
+															: c.customer.name}
 													</p>
 												</div>
 												<div className="col d-flex justify-content-end align-items-center">
@@ -209,6 +225,12 @@ function ConversationChat(props) {
 													{c.subject}
 												</p>
 												<p className="mb-0 small">
+													{c.lastMessage.userId ===
+													userId ? (
+														<b>You: </b>
+													) : (
+														''
+													)}
 													{c.lastMessage.content}
 												</p>
 											</div>
@@ -233,7 +255,7 @@ function ConversationChat(props) {
 									m.userId != userId ? '' : 'ms-auto'
 								}`}
 							>
-								{m.userId != userId && (
+								{m.userId != userId && isCustomer && (
 									<div className="d-flex align-items-center">
 										<div>
 											<img

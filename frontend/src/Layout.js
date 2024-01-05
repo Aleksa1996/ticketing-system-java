@@ -1,18 +1,56 @@
-import { Navbar, Container } from 'react-bootstrap';
-import { Link } from "react-router-dom";
+import { Navbar, Container, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { UserContext } from './UserContext';
+import { useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Layout(props) {
+	const navigate = useNavigate();
+	const { user, setUser } = useContext(UserContext);
+
+	const handleLogout = (e) => {
+		e.preventDefault();
+		setUser(null);
+		localStorage.removeItem('access_token');
+		navigate('/');
+	};
+
 	return (
 		<>
 			<Navbar bg="light" data-bs-theme="light">
 				<Container>
-					<Navbar.Brand as={Link} to="/" className="text-primary-color">
+					<Navbar.Brand
+						as={Link}
+						to="/"
+						className="text-primary-color"
+					>
 						Ticketing System
 					</Navbar.Brand>
 					<Navbar.Collapse className="justify-content-end">
-						<Link to="/login" className="btn btn-background-color">
-							Login
-						</Link>
+						{user && (
+							<Link
+								to="/dashboard"
+								className="btn btn-background-color me-3"
+							>
+								Dashboard
+							</Link>
+						)}
+						{user ? (
+							<Button
+								className="btn btn-background-color"
+								type="button"
+								onClick={handleLogout}
+							>
+								Logout
+							</Button>
+						) : (
+							<Link
+								to="/login"
+								className="btn btn-background-color"
+							>
+								Login
+							</Link>
+						)}
 					</Navbar.Collapse>
 				</Container>
 			</Navbar>

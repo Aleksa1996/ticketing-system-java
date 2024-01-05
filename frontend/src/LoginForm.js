@@ -1,6 +1,8 @@
 import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from './UserContext';
+import { jwtDecode } from 'jwt-decode';
 
 const validateFormData = (formData) => {
 	const errors = {};
@@ -32,6 +34,7 @@ const login = (email, password) => {
 
 function LoginForm(props) {
 	const navigate = useNavigate();
+	const { user, setUser } = useContext(UserContext);
 
 	const [formFieldTouched, setFormFieldTouched] = useState({
 		email: false,
@@ -59,6 +62,12 @@ function LoginForm(props) {
 		setErrors(validateFormData(formData));
 	}, [formData]);
 
+	useEffect(() => {
+		if (user) {
+			navigate('/dashboard');
+		}
+	}, [user]);
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -67,7 +76,9 @@ function LoginForm(props) {
 		if (response.status === 200) {
 			const responseJson = await response.json();
 			localStorage.setItem('access_token', responseJson.access_token);
-			navigate('/conversations');
+			try {
+				setUser(jwtDecode(responseJson.access_token));
+			} catch (e) {}
 		}
 
 		if (response.status >= 500) {

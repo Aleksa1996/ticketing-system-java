@@ -15,5 +15,6 @@
             </type>
         </property>
         <property name="description" column="description" type="string" length="100"/>
+        <property name="occurredOn" column="occurred_on" type="timestamp"/>
     </class>
 </hibernate-mapping>

@@ -1,9 +1,12 @@
 package com.aleksa1996.ticketingsystem.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.Comparator;
 
 public class Conversation extends Entity {
 
@@ -12,6 +15,8 @@ public class Conversation extends Entity {
     private Customer customer;
 
     private Agent assignedAgent;
+
+    private Date createdOn;
 
     private Set<ConversationStatus> statuses;
 
@@ -27,6 +32,7 @@ public class Conversation extends Entity {
 
         setSubject(subject);
         setCustomer(customer);
+        setCreatedOn(new Date());
         setMessages(new LinkedHashSet<Message>(0));
         setStatuses(new HashSet<ConversationStatus>(0));
     }
@@ -63,12 +69,24 @@ public class Conversation extends Entity {
         return "support@ticketing-system.com";
     }
 
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    private void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
     public Set<ConversationStatus> getStatuses() {
         return statuses;
     }
 
     private void setStatuses(Set<ConversationStatus> statuses) {
         this.statuses = statuses;
+    }
+
+    public ConversationStatus getCurrentStatus() {
+        return statuses.stream().sorted((a, b) -> b.getOccurredOn().compareTo(a.getOccurredOn())).findFirst().get();
     }
 
     public Set<Message> getMessages() {

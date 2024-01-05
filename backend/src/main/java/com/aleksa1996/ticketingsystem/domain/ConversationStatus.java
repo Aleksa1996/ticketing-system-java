@@ -1,5 +1,7 @@
 package com.aleksa1996.ticketingsystem.domain;
 
+import java.util.Date;
+
 public class ConversationStatus implements Comparable<ConversationStatus> {
 
     private int id;
@@ -8,12 +10,15 @@ public class ConversationStatus implements Comparable<ConversationStatus> {
 
     private String description;
 
+    private Date occurredOn;
+
     public ConversationStatus() {
     }
 
     public ConversationStatus(ConversationStatusState state, String description) {
         setState(state);
         setDescription(description);
+        setOccurredOn(new Date());
     }
 
     public int getId() {
@@ -38,6 +43,14 @@ public class ConversationStatus implements Comparable<ConversationStatus> {
 
     private void setDescription(String description) {
         this.description = description;
+    }
+
+    public Date getOccurredOn() {
+        return occurredOn;
+    }
+
+    private void setOccurredOn(Date occurredOn) {
+        this.occurredOn = occurredOn;
     }
 
     @Override

@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import Home from './Home';
 import Login from './Login';
+import Dashboard from './Dashboard';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Conversations from './Conversations';
+import ProtectedRoute from './ProtectedRoute';
 import { UserContext } from './UserContext';
 import { jwtDecode } from 'jwt-decode';
 
@@ -25,6 +27,15 @@ const router = createHashRouter([
 		path: '/conversations',
 		element: <Conversations />,
 		children: [],
+	},
+	{
+		element: <ProtectedRoute />,
+		children: [
+			{
+				path: '/dashboard',
+				element: <Dashboard />,
+			},
+		],
 	},
 ]);
 

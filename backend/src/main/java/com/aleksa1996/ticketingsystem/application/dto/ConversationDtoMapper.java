@@ -26,7 +26,8 @@ public class ConversationDtoMapper implements DtoMapper<Conversation, Conversati
         Set<ConversationStatusDto> statuses = new HashSet<ConversationStatusDto>();
 
         item.getStatuses().forEach((status) -> {
-            statuses.add(new ConversationStatusDto(status.getState().name(), status.getDescription()));
+            statuses.add(new ConversationStatusDto(status.getDescription(), status.getState().name(),
+                    status.getOccurredOn()));
         });
 
         return new ConversationDto(
@@ -34,6 +35,10 @@ public class ConversationDtoMapper implements DtoMapper<Conversation, Conversati
                 item.getSubject(),
                 customerDtoMapper.item(item.getCustomer()),
                 (item.getAssignedAgent() == null) ? null : agentDtoMapper.item(item.getAssignedAgent()),
+                item.getCreatedOn(),
+                (item.getCurrentStatus() == null) ? null
+                        : new ConversationStatusDto(item.getCurrentStatus().getDescription(),
+                                item.getCurrentStatus().getState().name(), item.getCurrentStatus().getOccurredOn()),
                 (item.getLastMessage() == null) ? null : conversationMessageDtoMapper.item(item.getLastMessage()),
                 statuses);
     }
