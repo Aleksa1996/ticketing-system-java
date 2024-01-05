@@ -4,6 +4,7 @@ import moment from 'moment';
 import { useSearchParams } from 'react-router-dom';
 import { UserContext } from './UserContext';
 import { Client } from '@stomp/stompjs';
+import { Link } from 'react-router-dom';
 
 const getConversations = (id) => {
 	return fetch(`/api/v1/conversations?page=1&size=20&userId=${id}`, {
@@ -60,12 +61,14 @@ function ConversationChat(props) {
 
 	const { user, setUser } = useContext(UserContext);
 
+	let isCustomer = false;
 	let userId = null;
 	if (user) {
 		userId = user.id;
 	}
 
 	if (searchParams.has('userId')) {
+		isCustomer = true;
 		userId = searchParams.get('userId');
 	}
 
@@ -164,9 +167,20 @@ function ConversationChat(props) {
 						<div className="messages-box">
 							<div className="list-group rounded-0">
 								{conversations.map((c) => (
-									<a
+									<Link
 										key={c.id}
-										className="list-group-item list-group-item-action py-3 active text-white rounded-0"
+										to={`/conversations?conversationId=${
+											c.id
+										}${
+											isCustomer
+												? `&userId=${userId}`
+												: ''
+										}`}
+										className={`list-group-item list-group-item-action py-3 ${
+											c.id === connversation.id
+												? 'active text-white'
+												: ''
+										}   rounded-0`}
 									>
 										<div className="media">
 											<div className="row">
@@ -178,7 +192,7 @@ function ConversationChat(props) {
 														className="rounded-circle"
 													/>
 													<p className="m-0 ms-2">
-														Jason Doe
+														{c.assignedAgent.name}
 													</p>
 												</div>
 												<div className="col d-flex justify-content-end align-items-center">
@@ -191,13 +205,15 @@ function ConversationChat(props) {
 											</div>
 
 											<div className="media-body ml-4">
-												<p>{c.subject}</p>
-												<p className="font-italic mb-0 text-small">
+												<p className="small mt-1 mb-3">
+													{c.subject}
+												</p>
+												<p className="mb-0 small">
 													{c.lastMessage.content}
 												</p>
 											</div>
 										</div>
-									</a>
+									</Link>
 								))}
 							</div>
 						</div>
@@ -218,12 +234,16 @@ function ConversationChat(props) {
 								}`}
 							>
 								{m.userId != userId && (
-									<img
-										src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
-										alt="user"
-										width="50"
-										className="rounded-circle"
-									/>
+									<div className="d-flex align-items-center">
+										<div>
+											<img
+												src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg"
+												alt="user"
+												width="50"
+												className="rounded-circle"
+											/>
+										</div>
+									</div>
 								)}
 
 								<div
@@ -234,7 +254,7 @@ function ConversationChat(props) {
 									<div
 										className={`${
 											m.userId != userId
-												? 'bg-light'
+												? 'chat-text-background-other mt-2'
 												: 'bg-primary'
 										} rounded py-2 px-3 mb-2`}
 									>

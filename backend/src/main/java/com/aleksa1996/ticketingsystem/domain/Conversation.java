@@ -59,6 +59,10 @@ public class Conversation extends Entity {
         setAssignedAgent(agent);
     }
 
+    public String getDefaultAgent() {
+        return "support@ticketing-system.com";
+    }
+
     public Set<ConversationStatus> getStatuses() {
         return statuses;
     }

@@ -23,6 +23,7 @@ import com.aleksa1996.ticketingsystem.application.dto.ConversationMessageDto;
 import com.aleksa1996.ticketingsystem.application.dto.ConversationMessageDtoMapper;
 import com.aleksa1996.ticketingsystem.application.exception.AgentAlreadyExists;
 import com.aleksa1996.ticketingsystem.application.exception.ConversationNotFound;
+import com.aleksa1996.ticketingsystem.application.exception.UsertNotExists;
 import com.aleksa1996.ticketingsystem.domain.Agent;
 import com.aleksa1996.ticketingsystem.domain.Conversation;
 import com.aleksa1996.ticketingsystem.domain.ConversationHasNewMessage;
@@ -83,6 +84,11 @@ public class TicketingSystemService {
                 : customerRepository.save(new Customer(UUID.randomUUID(), name, email));
 
         Conversation conversation = Conversation.open(subject, customer, message);
+
+        Agent defaultAgent = agentRepository.findByEmail(conversation.getDefaultAgent()).orElseThrow(
+                () -> new UsertNotExists("User not found"));
+
+        conversation.assignAgent(defaultAgent);
 
         conversationRepository.save(conversation);
 

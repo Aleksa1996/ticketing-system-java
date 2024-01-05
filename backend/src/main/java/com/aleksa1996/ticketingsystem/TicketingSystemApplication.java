@@ -21,6 +21,7 @@ public class TicketingSystemApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
+		ticketingSystemService.createAgent("Support", "support@ticketing-system.com", "support");
 		ticketingSystemService.createAgent("Aleksa Jovanovic", "aleksa.jovanovic@ticketing-system.com", "peraperic123");
 	}
 }
