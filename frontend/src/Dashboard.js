@@ -4,6 +4,7 @@ import { UserContext } from './UserContext';
 import moment from 'moment';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link } from 'react-router-dom';
+import { Alert } from 'react-bootstrap';
 
 const getConversations = () => {
 	return fetch(`/api/v1/conversations?page=1&size=20`, {
@@ -26,9 +27,23 @@ const selfAssign = (id, agentId) => {
 	});
 };
 
+const closeConversation = (id, userId, content) => {
+	return fetch(`/api/v1/conversations/${id}/close`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			userId,
+			content,
+		}),
+	});
+};
+
 function Dashboard(props) {
 	const { user, setUser } = useContext(UserContext);
 	const [conversations, setConversations] = useState([]);
+	const [alert, setAlert] = useState(null);
 
 	const loadConversations = (id) =>
 		getConversations(id)
@@ -44,14 +59,36 @@ function Dashboard(props) {
 	}, []);
 
 	const handleSelfAssign = (id) => {
-		console.log(id);
-		selfAssign(id)
+		selfAssign(id, user.id)
 			.then((response) => response.json())
-			.then((response) => console.log(response));
+			.then((response) => {
+				if (response.error) {
+					setAlert({ success: false, message: response.message });
+				} else {
+					setAlert({
+						success: true,
+						message: 'Successfully self assigned conversation.',
+					});
+					loadConversations();
+				}
+			});
 	};
 
-	const handleClose = (id) => {
-		console.log(id);
+	const handleClose = (id, userId, content) => {
+		closeConversation(id, userId, content)
+			.then((response) => {
+				setAlert({
+					success: true,
+					message: 'Successfully closed conversation.',
+				});
+				loadConversations();
+			})
+			.catch((e) => {
+				setAlert({
+					success: false,
+					message: 'Closing conversation failed',
+				});
+			});
 	};
 
 	return (
@@ -59,6 +96,11 @@ function Dashboard(props) {
 			<h1 className="mt-5 mb-3 text-primary-color text-center">
 				Conversations
 			</h1>
+			{alert && (
+				<Alert variant={alert.success ? 'success' : 'danger'}>
+					{alert.message}
+				</Alert>
+			)}
 			<div className="bd-example">
 				<table className="table table-hover align-middle">
 					<thead className="table-light">
@@ -100,6 +142,10 @@ function Dashboard(props) {
 										</Dropdown.Toggle>
 										<Dropdown.Menu>
 											<Dropdown.Item
+												disabled={
+													c.currentStatus.state ===
+													'CLOSED'
+												}
 												onClick={(e) => {
 													e.preventDefault();
 													handleSelfAssign(c.id);
@@ -108,6 +154,10 @@ function Dashboard(props) {
 												Self assign
 											</Dropdown.Item>
 											<Dropdown.Item
+												disabled={
+													c.currentStatus.state ===
+													'CLOSED'
+												}
 												onClick={(e) => {
 													e.preventDefault();
 													handleClose(c.id);
