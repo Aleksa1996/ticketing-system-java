@@ -56,6 +56,7 @@ function Dashboard(props) {
 
 	useEffect(() => {
 		loadConversations();
+		document.title = 'Dashboard | Ticketing system';
 	}, []);
 
 	const handleSelfAssign = (id) => {
@@ -144,7 +145,7 @@ function Dashboard(props) {
 											<Dropdown.Item
 												disabled={
 													c.currentStatus.state ===
-													'CLOSED'
+													'CLOSED' || c.assignedAgent.id === user.id
 												}
 												onClick={(e) => {
 													e.preventDefault();

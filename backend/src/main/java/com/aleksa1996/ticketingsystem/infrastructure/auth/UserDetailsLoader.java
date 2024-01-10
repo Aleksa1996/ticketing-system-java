@@ -21,6 +21,6 @@ public class UserDetailsLoader implements UserDetailsService {
         Agent user = agentRepository.findByEmail(username).orElseThrow(
                 () -> new UsernameNotFoundException("Username or email" + username + " not found!"));
 
-        return new UserDetails(user.getId(), user.getEmail(), user.getPassword());
+        return new UserDetails(user.getId(), user.getName(), user.getEmail(), user.getPassword());
     }
 }

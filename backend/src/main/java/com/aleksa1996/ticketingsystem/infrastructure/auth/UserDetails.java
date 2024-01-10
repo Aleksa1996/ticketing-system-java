@@ -11,12 +11,15 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     private UUID id;
 
+    private String name;
+
     private String email;
 
     private String password;
 
-    public UserDetails(UUID id, String email, String password) {
+    public UserDetails(UUID id, String name, String email, String password) {
         this.id = id;
+        this.name = name;
         this.email = email;
         this.password = password;
     }
@@ -28,6 +31,10 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     public UUID getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

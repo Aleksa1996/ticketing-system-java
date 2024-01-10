@@ -39,6 +39,16 @@ const router = createHashRouter([
 	},
 ]);
 
+const me = (accessToken) => {
+	return fetch('/api/v1/auth/me', {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`,
+		},
+	});
+};
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 function App() {
@@ -51,6 +61,13 @@ function App() {
 		} catch (e) {
 			initialUser = null;
 		}
+
+		me(accessToken).then((response) => {
+			if (response.status !== 200) {
+				setUser(null);
+				localStorage.removeItem('access_token');
+			}
+		});
 	}
 
 	const [user, setUser] = useState(initialUser);

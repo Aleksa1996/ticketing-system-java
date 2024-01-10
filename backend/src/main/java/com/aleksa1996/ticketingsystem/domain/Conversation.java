@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.Comparator;
 
 public class Conversation extends Entity {
 
