@@ -85,6 +85,8 @@ function ConversationChat(props) {
 			.then((response) => {
 				if (!response.error) {
 					setConversation(response);
+				} else {
+					navigate(isCustomer ? '/' : '/dashboard');
 				}
 			});
 
@@ -103,6 +105,8 @@ function ConversationChat(props) {
 			.then((response) => {
 				if (!response.error) {
 					setConversations(response);
+				} else {
+					navigate(isCustomer ? '/' : '/dashboard');
 				}
 			});
 
@@ -341,8 +345,15 @@ function ConversationChat(props) {
 									conversation &&
 									conversation.currentStatus.state ===
 										'CLOSED'
-										? 'Conversation closed, typing messages disabled'
-										: 'Type a message'
+										? 'Conversation closed, typing messages is currently disabled.'
+										: (user &&
+												conversation &&
+												user.id ===
+													conversation.assignedAgent
+														.id) ||
+										  !user
+										? 'Type a message'
+										: ' Conversation not assigned to current logged in agent, typing messages is currently disabled.'
 								}
 								aria-describedby="button-addon2"
 								className="form-control rounded-0 bg-light typing-area-input py-4 shadow-none"
@@ -350,7 +361,7 @@ function ConversationChat(props) {
 								disabled={
 									conversation &&
 									conversation.currentStatus.state ===
-										'CLOSED'
+										'CLOSED' ? true : (user && conversation && user.id !== conversation.assignedAgent.id)
 								}
 								value={message}
 							/>

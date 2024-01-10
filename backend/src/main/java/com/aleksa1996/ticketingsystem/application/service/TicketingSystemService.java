@@ -179,6 +179,16 @@ public class TicketingSystemService {
 
         conversation.close();
 
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(conversation.getCustomer().getEmail());
+        mailMessage.setSubject("[Ticketing System] - Your ticket has been closed - " + conversation.getSubject());
+
+        String body = "Closed ticket \n\nDetails: \n Name: " + conversation.getCustomer().getName() + " \n Email: "
+                + conversation.getCustomer().getEmail()
+                + " \n Subject: " + conversation.getSubject();
+        mailMessage.setText(body);
+        mailSender.send(mailMessage);
+
         conversationRepository.save(conversation);
     }
 }
